@@ -5,7 +5,7 @@ import UsuarioRoute from "./usuario.route.js";
 import EventoRoute from "./evento.route.js";
 const router = Router();
 
-router.use('/torneo',TournametRoute);
+router.use(TournametRoute);
 router.use('/apuesta' ,ApuestaRoute);
 router.use('/usuario' ,UsuarioRoute);
 router.use('/evento' ,EventoRoute);

@@ -6,6 +6,7 @@ export const getApuestaModel = async () => {
     return result;
 }
 
+
 export const postApuestaModel = async (info) => {
     const conn = await connection();
     const result = await conn.collection("apuesta").insertOne(info);
