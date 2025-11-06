@@ -9,6 +9,7 @@ const router = Router();
 
 router.get("/", EventoController.getEvento);
 router.get("/deporte/:deporte", eventoController.getEventosByDeporte);
+router.get("/cuota_local/:cuota_local", eventoController.getEventosCuotaMayor);
 router.post("/", validate(eventoPost),validateEventoConsistency,EventoController.postEvento);
 
 export default router;

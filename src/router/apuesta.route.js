@@ -8,6 +8,7 @@ const router = Router();
 
 router.get("/", ApuestaController.getAllApuestas);
 router.get("/estado/:estado", ApuestaController.getApuestaByEstado);
+router.get("/baloncesto/", ApuestaController.getApuestaByBaloncesto);
 router.post("/",validate(apuestaPost),validateApuestaConsistency, ApuestaController.postApuesta);
 
 export default router;

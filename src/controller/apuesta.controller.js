@@ -3,6 +3,7 @@ import {
   postApuestaModel,
   getApuestaModel,
   getApuestaByEstadoModel,
+  getApuestaByBaloncestoModel,
 } from "../model/apuesta.model.js";
 import { ObjectId } from "mongodb";
 
@@ -35,9 +36,25 @@ export const getApuestaByEstado = async (req, res) => {
     const apuestas = await getApuestaByEstadoModel(estado);
 
     res.json({
-      success :true,
-      count:apuestas.length,
+      success: true,
+      count: apuestas.length,
       data: apuestas,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error al obtener las apuestas: " + error.message,
+    });
+  }
+};
+
+export const getApuestaByBaloncesto = async (req, res) => {
+  try {
+    const apuestas = await getApuestaByBaloncestoModel();
+    res.json({
+      success : true,
+      count: apuestas.length,
+      data: apuestas
     });
   } catch (error) {
     res.status(500).json({
@@ -107,4 +124,5 @@ export default {
   getAllApuestas,
   getApuestaByEstado,
   postApuesta,
+  getApuestaByBaloncesto,
 };

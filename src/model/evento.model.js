@@ -18,6 +18,16 @@ export const getEventosByDeporteModel = async (deporte) => {
     }
 };
 
+export const getEventosCuotaMayorModel  = async () => {
+    try {
+        const db = await connection();
+        const eventos = await db.collection("eventos").find({cuota_local: {$gt:2.0}}).toArray();
+        return eventos;
+    } catch (error) {
+        console.error("❌ Error en getEventoByCuotaModel:", error.message);
+        throw error;
+    }
+}
 export const postEventoModel = async (info) => {
     const conn = await connection();
     const result = await conn.collection("eventos").insertOne(info);
