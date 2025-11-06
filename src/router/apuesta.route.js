@@ -1,12 +1,13 @@
 import { Router } from "express";
-import Apuesta from "../controller/apuesta.controller.js";
+import ApuestaController from "../controller/apuesta.controller.js";
 import { validate } from "../middleware/validator.middleware.js";
 import { apuestaPost, validateApuestaConsistency } from "../validator/apuesta.validator.js";
 
 
 const router = Router();
 
-router.get("/", Apuesta.getAllApuestas);
-router.post("/",validate(apuestaPost),validateApuestaConsistency, Apuesta.postApuesta);
+router.get("/", ApuestaController.getAllApuestas);
+router.get("/estado/:estado", ApuestaController.getApuestaByEstado);
+router.post("/",validate(apuestaPost),validateApuestaConsistency, ApuestaController.postApuesta);
 
 export default router;

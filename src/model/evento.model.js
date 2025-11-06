@@ -2,17 +2,14 @@ import { connection } from "../services/mongoDb.service.js"
 
 export const getEventoModel = async () => {
     const conn = await connection();
-    const result = await conn.collection("evento").find({}).toArray();
+    const result = await conn.collection("eventos").find({}).toArray();
     return result;
 }
 
 export const getEventosByDeporteModel = async (deporte) => {
     try {
-        if (!connection) {
-            await connectDB();
-        }
         const db = await connection();
-        const eventos = await db.collection("evento").find({ deporte: deporte }).toArray();
+        const eventos = await db.collection("eventos").find({ deporte: deporte }).toArray();
         return eventos;
         
     } catch (error) {
@@ -23,13 +20,13 @@ export const getEventosByDeporteModel = async (deporte) => {
 
 export const postEventoModel = async (info) => {
     const conn = await connection();
-    const result = await conn.collection("evento").insertOne(info);
+    const result = await conn.collection("eventos").insertOne(info);
     return result;
 }
 
 export const postEventoManyModel = async (info) => {
     const conn = await connection();
-    const result = await conn.collection("evento").insertMany(info);
+    const result = await conn.collection("eventos").insertMany(info);
     return result;
 }
 
