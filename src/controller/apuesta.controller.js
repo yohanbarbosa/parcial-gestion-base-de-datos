@@ -4,8 +4,11 @@ import {
   getApuestaModel,
   getApuestaByEstadoModel,
   getApuestaByBaloncestoModel,
+  getApuestaByIdModel,
+  updateEstadoApuestaModel,
 } from "../model/apuesta.model.js";
 import { ObjectId } from "mongodb";
+import { actualizarSaldoUsuarioModel } from "../model/usuario.model.js";
 
 export const getAllApuestas = async (req, res) => {
   try {
@@ -52,9 +55,9 @@ export const getApuestaByBaloncesto = async (req, res) => {
   try {
     const apuestas = await getApuestaByBaloncestoModel();
     res.json({
-      success : true,
+      success: true,
       count: apuestas.length,
-      data: apuestas
+      data: apuestas,
     });
   } catch (error) {
     res.status(500).json({
@@ -120,9 +123,47 @@ export const postApuesta = async (req, res) => {
   }
 };
 
+export const updateEstadoApuesta = async (req, res) => {
+  try {
+    const { idApuesta } = req.params;
+    const {inputEstado} = req.body
+
+    if (!inputEstado) {
+      return res.status(400).json({ error: "Ingrese un valor" });
+    }
+
+    const apuesta = await getApuestaByIdModel(idApuesta);
+
+    if (!apuesta) {
+      return res.status(404).json({ error: "Apuesta no encontrada" });
+    }
+
+    if(inputEstado ==="ganada") {
+      //  traer datos
+      const usuario = apuesta.usuario;
+      const ganancia = apuesta.posible_ganancia;
+  
+      //  Actualizar saldo
+      await actualizarSaldoUsuarioModel(usuario, ganancia);
+    }
+
+    //  Actualizar estado de la apuesta
+    await updateEstadoApuestaModel(idApuesta,inputEstado);
+
+    res.json({ mensaje: `Saldo actualizado y apuesta marcada como ${inputEstado}` });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error al obtener la apuesta: " + error.message,
+    });
+  }
+};
+
+
 export default {
   getAllApuestas,
   getApuestaByEstado,
   postApuesta,
   getApuestaByBaloncesto,
+  updateEstadoApuesta,
 };

@@ -4,6 +4,7 @@ import {
   postEventoModel,
   getEventosByDeporteModel,
   getEventosCuotaMayorModel,
+  updateCuotaVisitanteModel,
 } from "../model/evento.model.js";
 
 export const getEvento = async (req, res) => {
@@ -64,9 +65,9 @@ export const getEventosCuotaMayor = async (req, res) => {
 
     const eventos = await getEventosCuotaMayorModel(cuota_local);
     res.json({
-        success: true ,
-        count: eventos.length,
-        data: eventos,
+      success: true,
+      count: eventos.length,
+      data: eventos,
     });
   } catch (error) {
     res.status(500).json({
@@ -76,10 +77,82 @@ export const getEventosCuotaMayor = async (req, res) => {
   }
 };
 
+export const updateCuotaVisitante = async (req, res) => {
+  try {
+    const { idEvento } = req.params;
+    const { nuevaCuota } = req.body;
+
+ 
+    if (!idEvento) {
+      return res.status(400).json({
+        success: false,
+        message: "El ID del evento es requerido",
+      });
+    }
+
+  
+    if (!nuevaCuota && nuevaCuota !== 0) {
+      return res.status(400).json({
+        success: false,
+        message: "El parámetro 'nuevaCuota' es requerido",
+      });
+    }
+
+    const cuotaNumero = parseFloat(nuevaCuota);
+    
+    if (isNaN(cuotaNumero) || 
+        cuotaNumero < 1.0 || 
+        cuotaNumero > 1000 || 
+        !/^\d*\.?\d+$/.test(nuevaCuota.toString().trim())) {
+      
+      return res.status(400).json({
+        success: false,
+        message: "La cuota debe ser un número entre 1.0 y 1000, sin caracteres especiales",
+      });
+    }
+
+    
+    const result = await updateCuotaVisitanteModel(idEvento, cuotaNumero);
+
+   
+    if (result.matchedCount === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Evento no encontrado",
+      });
+    }
+
+    res.json({
+      success: true,
+      message: " Cuota visitante actualizada exitosamente",
+      data: {
+        evento_id: idEvento,
+        cuota_visitante_actualizada: cuotaNumero,
+        documentos_afectados: result.modifiedCount
+      }
+    });
+    
+  } catch (error) {
+    console.error(" Error en updateCuotaVisitante:", error.message);
+    
+    if (error.message.includes("ObjectId")) {
+      return res.status(400).json({
+        success: false,
+        message: "ID de evento inválido",
+      });
+    }
+    
+    res.status(500).json({
+      success: false,
+      message: "Error al actualizar cuota visitante: " + error.message,
+    });
+  }
+};
 
 export default {
   getEventosByDeporte,
   getEventosCuotaMayor,
   getEvento,
   postEvento,
+  updateCuotaVisitante,
 };

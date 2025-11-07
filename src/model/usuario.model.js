@@ -1,4 +1,5 @@
 import { connection } from "../services/mongoDb.service.js"
+import { ObjectId } from "mongodb";
 
 export const getUsuarioModel = async () => {
     const conn = await connection();
@@ -37,4 +38,15 @@ export const getUsuariosBySaldoModel = async (saldoMinimo) => {
         console.error("❌ Error en getUsuariosBySaldoModel:", error.message);
         throw error;
     }
+};
+
+
+export const actualizarSaldoUsuarioModel = async (idUsuario, ganancia) => {
+    const db = await connection();
+    const result =  await  db.collection("usuarios").updateOne(
+        { _id: new ObjectId(idUsuario) },
+        { $inc: { saldo: ganancia } }
+    );
+
+    return result;
 };
