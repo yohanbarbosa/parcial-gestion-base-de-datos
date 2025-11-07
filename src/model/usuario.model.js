@@ -50,3 +50,22 @@ export const actualizarSaldoUsuarioModel = async (idUsuario, ganancia) => {
 
     return result;
 };
+
+
+
+// Modelo
+export const deleteUsuarioModel = async (usuarioId, eliminarApuestas = false) => {
+    const db = await connection();
+    
+    if (eliminarApuestas) {
+      await db.collection("apuestas").deleteMany({ usuario: new ObjectId(usuarioId) });
+    } else {
+      const tieneApuestas = await db.collection("apuestas").countDocuments({ usuario: new ObjectId(usuarioId) });
+      if (tieneApuestas) throw new Error("Usuario tiene apuestas. Use eliminarApuestas=true");
+    }
+    
+    const result = await db.collection("usuarios").deleteOne({ _id: new ObjectId(usuarioId) });
+    return result;
+  };
+  
+  

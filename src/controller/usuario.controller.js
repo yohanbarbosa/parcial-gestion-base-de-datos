@@ -1,4 +1,4 @@
-import { getUsuarioModel , postUsuarioModel, postUsuarioManyModel, getUsuariosBySaldoModel } from "../model/usuario.model.js";
+import { getUsuarioModel , postUsuarioModel, postUsuarioManyModel, getUsuariosBySaldoModel , deleteUsuarioModel } from "../model/usuario.model.js";
 
 export const getUsuario = async ( _ , res)=> {
     const result = await getUsuarioModel();
@@ -41,10 +41,37 @@ export const getUsuariosBySaldo = async (req, res) => {
         });
     }
 };
+
+// Controller
+export const deleteUsuario = async (req, res) => {
+    try {
+      const { idUsuario } = req.params;
+      const { eliminarApuestas } = req.query;
+  
+      const result = await deleteUsuarioModel(idUsuario, eliminarApuestas === 'true');
+      
+      if (result.deletedCount === 0) {
+        return res.status(404).json({ success: false, message: "Usuario no encontrado" });
+      }
+  
+      res.json({
+        success: true,
+        message: eliminarApuestas ? "Usuario y apuestas eliminados" : "Usuario eliminado"
+      });
+      
+    } catch (error) {
+      if (error.message.includes("tiene apuestas")) {
+        return res.status(400).json({ success: false, message: error.message });
+      }
+      res.status(500).json({ success: false, message: "Error al eliminar usuario" });
+    }
+  };
+  
  
 
 export default {
     getUsuariosBySaldo,
     getUsuario, 
-    postUsuario
+    postUsuario,
+    deleteUsuario
 }

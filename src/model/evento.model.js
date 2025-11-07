@@ -47,12 +47,40 @@ export const postEventoManyModel = async (info) => {
 };
 
 export const updateCuotaVisitanteModel = async (idEvento, nuevaCuota) => {
-  const db = await connection();
-  const result = await db
-    .collection("eventos")
-    .updateOne(
-      { _id: new ObjectId(idEvento) },
-      { $set: { cuota_visitante: nuevaCuota } }
-    );
+  try {
+    const db = await connection();
+    const result = await db
+      .collection("eventos")
+      .updateOne(
+        { _id: new ObjectId(idEvento) },
+        { $set: { cuota_visitante: nuevaCuota } }
+      );
     return result;
+  } catch (error) {
+    console.error(" Error en updateCuotaVisitanteModel:", error.message);
+    throw error;
+  }
+};
+
+export const getEventoByIdModel = async (idEvento) => {
+  const db = await connection();
+  const result = await db.collection("eventos").findOne({
+    _id: new ObjectId(idEvento),
+  });
+  return result;
+};
+
+
+
+export const deleteEventoModel = async (idEvento) => {
+  try {
+    const db = await connection();
+    const result = await db
+      .collection("eventos")
+      .deleteOne({ _id: new ObjectId(idEvento) });
+    return result;
+  } catch (error) {
+    console.error(" Error en deleteEventoModel:", error.message);
+    throw error;
+  }
 };

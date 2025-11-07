@@ -4,7 +4,9 @@ import {
   postEventoModel,
   getEventosByDeporteModel,
   getEventosCuotaMayorModel,
+  getEventoByIdModel,
   updateCuotaVisitanteModel,
+  deleteEventoModel,
 } from "../model/evento.model.js";
 
 export const getEvento = async (req, res) => {
@@ -82,7 +84,6 @@ export const updateCuotaVisitante = async (req, res) => {
     const { idEvento } = req.params;
     const { nuevaCuota } = req.body;
 
- 
     if (!idEvento) {
       return res.status(400).json({
         success: false,
@@ -90,7 +91,6 @@ export const updateCuotaVisitante = async (req, res) => {
       });
     }
 
-  
     if (!nuevaCuota && nuevaCuota !== 0) {
       return res.status(400).json({
         success: false,
@@ -99,22 +99,22 @@ export const updateCuotaVisitante = async (req, res) => {
     }
 
     const cuotaNumero = parseFloat(nuevaCuota);
-    
-    if (isNaN(cuotaNumero) || 
-        cuotaNumero < 1.0 || 
-        cuotaNumero > 1000 || 
-        !/^\d*\.?\d+$/.test(nuevaCuota.toString().trim())) {
-      
+
+    if (
+      isNaN(cuotaNumero) ||
+      cuotaNumero < 1.0 ||
+      cuotaNumero > 1000 ||
+      !/^\d*\.?\d+$/.test(nuevaCuota.toString().trim())
+    ) {
       return res.status(400).json({
         success: false,
-        message: "La cuota debe ser un número entre 1.0 y 1000, sin caracteres especiales",
+        message:
+          "La cuota debe ser un número entre 1.0 y 1000, sin caracteres especiales",
       });
     }
 
-    
     const result = await updateCuotaVisitanteModel(idEvento, cuotaNumero);
 
-   
     if (result.matchedCount === 0) {
       return res.status(404).json({
         success: false,
@@ -128,23 +128,54 @@ export const updateCuotaVisitante = async (req, res) => {
       data: {
         evento_id: idEvento,
         cuota_visitante_actualizada: cuotaNumero,
-        documentos_afectados: result.modifiedCount
-      }
+        documentos_afectados: result.modifiedCount,
+      },
     });
-    
   } catch (error) {
     console.error(" Error en updateCuotaVisitante:", error.message);
-    
+
     if (error.message.includes("ObjectId")) {
       return res.status(400).json({
         success: false,
         message: "ID de evento inválido",
       });
     }
-    
+
     res.status(500).json({
       success: false,
       message: "Error al actualizar cuota visitante: " + error.message,
+    });
+  }
+};
+
+export const deleteEvento = async (req, res) => {
+  try {
+    const { idEvento } = req.params;
+
+    if (!idEvento) {
+      return res.status(400).json({
+        success: false,
+        message: "El ID del evento es requerido",
+      });
+    }
+
+    const evento = await getEventoByIdModel(idEvento);
+    if (!evento) {
+      return res.status(404).json({
+        success: false,
+        message: "Evento no encontrado",
+      });
+    }
+
+    await deleteEventoModel(idEvento);
+    return res.json({
+      success:true,
+      msg:"El evento ya no se encuentra entre nosotros ;v"
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error al borrar el evento visitante: " + error.message,
     });
   }
 };
@@ -155,4 +186,5 @@ export default {
   getEvento,
   postEvento,
   updateCuotaVisitante,
+  deleteEvento,
 };
