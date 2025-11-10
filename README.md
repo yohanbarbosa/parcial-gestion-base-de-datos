@@ -115,9 +115,9 @@ Realizar una consulta que una las colecciones `apuestas`, `usuarios` y `eventos`
 ---
 
 ## ✍️ Autor
-**[Tu nombre aquí]**  
+**[Yohan]**  
 Curso: *Bases de Datos NoSQL*  
-Fecha: *[coloca la fecha]*
+Fecha: *[10/11/2025]*
 
 ---
 
