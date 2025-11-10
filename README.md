@@ -116,7 +116,7 @@ Realizar una consulta que una las colecciones `apuestas`, `usuarios` y `eventos`
 
 ## ✍️ Autor
 **[Yohan]**  
-Curso: *Bases de Datos NoSQL*  
+Curso: *Gestion Base de Datos*  
 Fecha: *[10/11/2025]*
 
 ---
