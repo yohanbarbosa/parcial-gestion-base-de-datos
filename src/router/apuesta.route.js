@@ -9,6 +9,8 @@ const router = Router();
 router.get("/", ApuestaController.getAllApuestas);
 router.get("/estado/:estado", ApuestaController.getApuestaByEstado);
 router.get("/baloncesto/", ApuestaController.getApuestaByBaloncesto);
+router.get("/totalApuestas/", ApuestaController.getTotalApuestaUsuario);
+router.get("/apuestaCompleta/", ApuestaController.getApuestasCompletas);
 router.put("/actualizarEstado/:idApuesta", ApuestaController.updateEstadoApuesta);
 router.post("/",validate(apuestaPost),validateApuestaConsistency, ApuestaController.postApuesta);
 

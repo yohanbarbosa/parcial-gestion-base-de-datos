@@ -6,8 +6,8 @@ import EventoRoute from "./evento.route.js";
 const router = Router();
 
 router.use(TournametRoute);
-router.use('/apuesta' ,ApuestaRoute);
-router.use('/usuario' ,UsuarioRoute);
-router.use('/evento' ,EventoRoute);
+router.use('/apuestas' ,ApuestaRoute);
+router.use('/usuarios' ,UsuarioRoute);
+router.use('/eventos' ,EventoRoute);
 
 export default router;

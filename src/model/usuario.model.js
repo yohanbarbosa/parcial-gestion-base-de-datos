@@ -41,6 +41,73 @@ export const getUsuariosBySaldoModel = async (saldoMinimo) => {
 };
 
 
+export const getUsuarioMayorGananciaModel = async () => {
+    const db = await connection();
+    
+    const resultado = await db.collection("apuestas")
+      .aggregate([
+        {
+          $match: {
+            estado: "ganada"
+          }
+        },
+        {
+          $lookup: {
+            from: "usuarios",
+            localField: "usuario",
+            foreignField: "_id",
+            as: "usuario_info"
+          }
+        },
+        {
+          $unwind: "$usuario_info"
+        },
+        {
+          $addFields: {
+            ganancia_neta: {
+              $subtract: ["$posible_ganancia", "$monto_apostado"]
+            }
+          }
+        },
+        {
+          $group: {
+            _id: "$usuario",
+            nombre: { $first: "$usuario_info.nombre" },
+            correo: { $first: "$usuario_info.correo" },
+            ganancia_acumulada: { $sum: "$ganancia_neta" },
+            apuestas_ganadas: { $sum: 1 },
+            total_apostado: { $sum: "$monto_apostado" },
+            total_ganado: { $sum: "$posible_ganancia" }
+          }
+        },
+        {
+          $sort: { ganancia_acumulada: -1 }
+        },
+        {
+          $group: {
+            _id: null,
+            max_ganancia: { $max: "$ganancia_acumulada" },
+            usuarios: { $push: "$$ROOT" }
+          }
+        },
+        {
+          $unwind: "$usuarios"
+        },
+        {
+          $match: {
+            $expr: { $eq: ["$usuarios.ganancia_acumulada", "$max_ganancia"] }
+          }
+        },
+        {
+          $replaceRoot: { newRoot: "$usuarios" }
+        }
+      ])
+      .toArray();
+    
+    return resultado;
+  };
+
+
 export const actualizarSaldoUsuarioModel = async (idUsuario, ganancia) => {
     const db = await connection();
     const result =  await  db.collection("usuarios").updateOne(
@@ -53,7 +120,7 @@ export const actualizarSaldoUsuarioModel = async (idUsuario, ganancia) => {
 
 
 
-// Modelo
+
 export const deleteUsuarioModel = async (usuarioId, eliminarApuestas = false) => {
     const db = await connection();
     

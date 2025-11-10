@@ -70,6 +70,43 @@ export const getEventoByIdModel = async (idEvento) => {
   return result;
 };
 
+export const getPromedioCuotasDeporteModel = async () => {
+  const db = await connection();
+  
+  const resultado = await db.collection("eventos")
+    .aggregate([
+      {
+        $group: {
+          _id: "$deporte",
+          total_eventos: { $sum: 1 },
+          promedio_cuota_local: { $avg: "$cuota_local" },
+          promedio_cuota_empate: { $avg: "$cuota_empate" },
+          promedio_cuota_visitante: { $avg: "$cuota_visitante" },
+          // Estadísticas adicionales
+          max_cuota_local: { $max: "$cuota_local" },
+          min_cuota_local: { $min: "$cuota_local" }
+        }
+      },
+      {
+        $project: {
+          _id: 1,
+          total_eventos: 1,
+          promedio_cuota_local: { $round: ["$promedio_cuota_local", 2] },
+          promedio_cuota_empate: { $round: ["$promedio_cuota_empate", 2] },
+          promedio_cuota_visitante: { $round: ["$promedio_cuota_visitante", 2] },
+          max_cuota_local: 1,
+          min_cuota_local: 1
+        }
+      },
+      {
+        $sort: { total_eventos: -1 }
+      }
+    ])
+    .toArray();
+  
+  return resultado;
+};
+
 
 
 export const deleteEventoModel = async (idEvento) => {

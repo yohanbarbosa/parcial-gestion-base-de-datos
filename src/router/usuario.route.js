@@ -7,6 +7,7 @@ const router = Router();
 
 router.get("/", usuarioController.getUsuario);
 router.get("/saldo/:saldo", usuarioController.getUsuariosBySaldo);
+router.get("/mayorGanancia", usuarioController.getUsuarioMayorGanancia);
 router.post("/",validate(usuarioPost) ,usuarioController.postUsuario);
 router.delete("/eliminar/:idUsuario", usuarioController.deleteUsuario);
 

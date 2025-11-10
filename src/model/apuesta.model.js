@@ -112,8 +112,42 @@ export const getApuestaByIdModel = async (idApuesta) => {
   return result;
 };
 
+export const getTotalApuestaUsuarioModel = async () => {
+  const db = await connection();
+  const result = await db
+    .collection("apuestas")
+    .aggregate([
+      {
+        $lookup: {
+          from: "usuarios",
+          localField: "usuario",
+          foreignField: "_id",
+          as: "usuario_info",
+        },
+      },
+      {
+        $unwind: "$usuario_info",
+      },
+      {
+        $group: {
+          _id: "$usuario",
+          nombre: { $first: "$usuario_info.nombre" },
+          correo: { $first: "$usuario_info.correo" },
+          total_apostado: { $sum: "$monto_apostado" },
+          cantidad_apuestas: { $sum: 1 },
+        },
+      },
+      {
+        $sort: { total_apostado: -1 },
+      },
+    ])
+    .toArray();
 
-export const updateEstadoApuestaModel = async (idApuesta , inputEstado) => {
+    return result;
+};
+
+
+export const updateEstadoApuestaModel = async (idApuesta, inputEstado) => {
   const db = await connection();
   const result = await db
     .collection("apuestas")
@@ -134,4 +168,61 @@ export const postApuestaManyModel = async (info) => {
   const conn = await connection();
   const result = await conn.collection("apuestas").insertMany(info);
   return result;
+};
+
+
+export const getApuestasCompletasModel = async () => {
+  const db = await connection();
+  
+  const resultado = await db.collection("apuestas")
+    .aggregate([
+      {
+        $lookup: {
+          from: "usuarios",
+          localField: "usuario",
+          foreignField: "_id",
+          as: "usuario_info"
+        }
+      },
+      {
+        $lookup: {
+          from: "eventos",
+          localField: "evento", 
+          foreignField: "_id",
+          as: "evento_info"
+        }
+      },
+      {
+        $unwind: "$usuario_info"
+      },
+      {
+        $unwind: "$evento_info"
+      },
+      {
+        $project: {
+          _id: 0,
+          nombre: "$usuario_info.nombre",
+          deporte: "$evento_info.deporte",
+          monto_apostado: 1,
+          posible_ganancia: 1,
+          estado: 1,
+          // Campos adicionales opcionales
+          tipo_apuesta: 1,
+          fecha_apuesta: 1,
+          equipos: {
+            $cond: {
+              if: { $and: ["$evento_info.equipo_local", "$evento_info.equipo_visitante"] },
+              then: { $concat: ["$evento_info.equipo_local", " vs ", "$evento_info.equipo_visitante"] },
+              else: "Evento individual"
+            }
+          }
+        }
+      },
+      {
+        $sort: { fecha_apuesta: -1 }
+      }
+    ])
+    .toArray();
+  
+  return resultado;
 };

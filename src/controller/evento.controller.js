@@ -7,6 +7,7 @@ import {
   getEventoByIdModel,
   updateCuotaVisitanteModel,
   deleteEventoModel,
+  getPromedioCuotasDeporteModel,
 } from "../model/evento.model.js";
 
 export const getEvento = async (req, res) => {
@@ -166,6 +167,7 @@ export const deleteEvento = async (req, res) => {
         message: "Evento no encontrado",
       });
     }
+    
 
     await deleteEventoModel(idEvento);
     return res.json({
@@ -180,9 +182,29 @@ export const deleteEvento = async (req, res) => {
   }
 };
 
+
+export const getPromedioCuotasDeporte = async (req, res) => {
+  try {
+    const resultado = await getPromedioCuotasDeporteModel();
+    
+    res.json({
+      success: true,
+      count: resultado.length,
+      data: resultado
+    });
+    
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error al calcular promedios: " + error.message
+    });
+  }
+};
+
 export default {
   getEventosByDeporte,
   getEventosCuotaMayor,
+  getPromedioCuotasDeporte,
   getEvento,
   postEvento,
   updateCuotaVisitante,
