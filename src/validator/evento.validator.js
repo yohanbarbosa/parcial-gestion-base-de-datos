@@ -86,7 +86,7 @@ export const eventoPost = checkSchema({
         }
     }
 
-},["body"]);
+},["body.*"]);
 
 
 

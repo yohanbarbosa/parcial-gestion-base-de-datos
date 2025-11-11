@@ -64,6 +64,11 @@ export const getEventosCuotaMayor = async (req, res) => {
         success: false,
         message: "El campo debe ser mayor a 2.0",
       });
+    } else if (isNaN(cuota_local)) {
+      return res.status(400).json({
+        success: false,
+        message: "El parámetro 'cuota_local' debe ser un numero",
+      });
     }
 
     const eventos = await getEventosCuotaMayorModel(cuota_local);
@@ -167,12 +172,11 @@ export const deleteEvento = async (req, res) => {
         message: "Evento no encontrado",
       });
     }
-    
 
     await deleteEventoModel(idEvento);
     return res.json({
-      success:true,
-      msg:"El evento ya no se encuentra entre nosotros ;v"
+      success: true,
+      msg: "El evento ya no se encuentra entre nosotros ;v",
     });
   } catch (error) {
     res.status(500).json({
@@ -182,21 +186,19 @@ export const deleteEvento = async (req, res) => {
   }
 };
 
-
 export const getPromedioCuotasDeporte = async (req, res) => {
   try {
     const resultado = await getPromedioCuotasDeporteModel();
-    
+
     res.json({
       success: true,
       count: resultado.length,
-      data: resultado
+      data: resultado,
     });
-    
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: "Error al calcular promedios: " + error.message
+      message: "Error al calcular promedios: " + error.message,
     });
   }
 };
